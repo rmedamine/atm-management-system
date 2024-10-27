@@ -2,7 +2,7 @@ objects = src/main.o src/auth.o
  objects = src/main.o src/system.o src/auth.o
 
 atm : $(objects)
-	cc -o atm $(objects)
+	cc -Wextra -Wall -o atm $(objects)
 
 main.o : src/header.h
 kbd.o : src/header.h

@@ -1,6 +1,7 @@
 #include "header.h"
 
 const char *RECORDS = "./data/records.txt";
+const char *TMP = "./data/tmp.txt";
 
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
@@ -185,9 +186,9 @@ void checkUpdates(struct User u)
     struct Record r;
     int accountNbr;
     FILE *record_file = fopen(RECORDS, "r+");
-    FILE *tmp_file = fopen("./data/tmp.txt", "w");
+    FILE *tmp_file = fopen(TMP, "w");
 
-    if (record_file == NULL)
+    if (record_file == NULL || tmp_file == NULL)
     {
         printf("Erreur d'ouverture du fichier !\n");
         return;
@@ -208,6 +209,7 @@ void checkUpdates(struct User u)
         // printf("-------  %s %d %d\n", u.name, strcmp(userName, u.name), r.accountNbr);
         if (strcmp(r.name, u.name) == 0 && r.accountNbr == accountNbr)
         {
+            found = true;
             printf("Choisissez ce que vous voulez mettre à jour :\n");
             printf("1 - Mettre à jour le pays\n");
             printf("2 - Mettre à jour le téléphone\n");
@@ -217,6 +219,7 @@ void checkUpdates(struct User u)
                 printf("Entrée invalide pour le choix !\n");
                 fclose(record_file);
                 fclose(tmp_file);
+                remove(TMP);
                 return;
             }
 
@@ -224,7 +227,6 @@ void checkUpdates(struct User u)
             {
                 printf("Entrez le nouveau pays : ");
                 scanf("%s", r.country);
-
             }
             else if (choice == 2)
             {
@@ -236,18 +238,16 @@ void checkUpdates(struct User u)
                 printf("Choix invalide !\n");
                 fclose(record_file);
                 fclose(tmp_file);
+                remove(TMP);
                 return;
             }
 
             // Mettre à jour le fichier...
-            
 
             // print_record(r);
             printf("✔ Mise à jour réussie !\n");
-        } 
-            saveAccountToFileFromRecord(tmp_file, r); 
-            remove(RECORDS);
-            rename(tmp_file, RECORDS)
+        }
+        saveAccountToFileFromRecord(tmp_file, r);
     }
     // printf("-------++++++++ %ld %ld\n", start_possition, end_possinttion);
 
@@ -255,8 +255,13 @@ void checkUpdates(struct User u)
     {
         printf("✖ Compte non trouvé !\n");
     }
+    else
+    {
+        remove(RECORDS);
+        rename(TMP, RECORDS);
+    }
     fclose(record_file);
-    return;
+    fclose(tmp_file);
     // Logique de mise à jour...
 }
 
