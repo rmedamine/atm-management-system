@@ -1,0 +1,8 @@
+6 6 yyy 101 12/12/2012 maroc 212 11222.00 saving
+
+0 0 yyy 102 11/11/2011 algerie 213 12121.00 current
+
+0 0 yyy 103 12/21/2000 fes 214 12121.00 fixed02
+
+0 0 yyy 104 12/1/1999 libie 215 121.00 fixed03
+

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 struct Date
 {
@@ -35,6 +36,13 @@ void registerMenu(char a[50], char pass[50]);
 const char *getPassword(struct User u);
 
 // system function
+void checkUpdates(struct User u);
+
 void createNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
+
+
+// CUTSOM FUNCTIONS
+
+// void print_record(struct Record r) ;

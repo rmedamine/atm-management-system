@@ -6,8 +6,8 @@ int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
     return fscanf(ptr, "%d %d %s %d %d/%d/%d %s %d %lf %s",
                   &r->id,
-		  &r->userId,
-		  name,
+                  &r->userId,
+                  name,
                   &r->accountNbr,
                   &r->deposit.month,
                   &r->deposit.day,
@@ -22,8 +22,24 @@ void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
 {
     fprintf(ptr, "%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
             r.id,
-	    u.id,
-	    u.name,
+            u.id,
+            u.name,
+            r.accountNbr,
+            r.deposit.month,
+            r.deposit.day,
+            r.deposit.year,
+            r.country,
+            r.phone,
+            r.amount,
+            r.accountType);
+}
+
+void saveAccountToFileFromRecord(FILE *ptr, struct Record r)
+{
+    fprintf(ptr, "%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
+            r.id,
+            r.id,
+            r.name,
             r.accountNbr,
             r.deposit.month,
             r.deposit.day,
@@ -163,3 +179,97 @@ void checkAllAccounts(struct User u)
     fclose(pf);
     success(u);
 }
+
+void checkUpdates(struct User u)
+{
+    struct Record r;
+    int accountNbr;
+    FILE *record_file = fopen(RECORDS, "r+");
+    FILE *tmp_file = fopen("./data/tmp.txt", "w");
+
+    if (record_file == NULL)
+    {
+        printf("Erreur d'ouverture du fichier !\n");
+        return;
+    }
+
+    printf("Entrez le numéro de compte à mettre à jour : ");
+    if (scanf("%d", &accountNbr) != 1)
+    {
+        printf("Entrée invalide pour le numéro de compte !\n");
+        fclose(record_file);
+        return;
+    }
+    printf("-------  %d\n", accountNbr);
+    bool found = false;
+    // Lire le fichier pour trouver le compte
+    while (getAccountFromFile(record_file, r.name, &r))
+    {
+        // printf("-------  %s %d %d\n", u.name, strcmp(userName, u.name), r.accountNbr);
+        if (strcmp(r.name, u.name) == 0 && r.accountNbr == accountNbr)
+        {
+            printf("Choisissez ce que vous voulez mettre à jour :\n");
+            printf("1 - Mettre à jour le pays\n");
+            printf("2 - Mettre à jour le téléphone\n");
+            int choice;
+            if (scanf("%d", &choice) != 1)
+            {
+                printf("Entrée invalide pour le choix !\n");
+                fclose(record_file);
+                fclose(tmp_file);
+                return;
+            }
+
+            if (choice == 1)
+            {
+                printf("Entrez le nouveau pays : ");
+                scanf("%s", r.country);
+
+            }
+            else if (choice == 2)
+            {
+                printf("Entrez le nouveau numéro de téléphone : ");
+                scanf("%d", &r.phone);
+            }
+            else
+            {
+                printf("Choix invalide !\n");
+                fclose(record_file);
+                fclose(tmp_file);
+                return;
+            }
+
+            // Mettre à jour le fichier...
+            
+
+            // print_record(r);
+            printf("✔ Mise à jour réussie !\n");
+        } 
+            saveAccountToFileFromRecord(tmp_file, r); 
+    }
+    // printf("-------++++++++ %ld %ld\n", start_possition, end_possinttion);
+
+    if (!found)
+    {
+        printf("✖ Compte non trouvé !\n");
+    }
+    fclose(record_file);
+    return;
+    // Logique de mise à jour...
+}
+
+// void print_record(struct Record r)
+// {
+//     printf("%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
+//            r.id,
+//            r.id,
+//            r.name,
+//            r.accountNbr,
+//            r.deposit.month,
+//            r.deposit.day,
+//            r.deposit.year,
+//            r.country,
+//            r.phone,
+//            r.amount,
+//            r.accountType);
+// }
