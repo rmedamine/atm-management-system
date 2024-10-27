@@ -246,6 +246,8 @@ void checkUpdates(struct User u)
             printf("✔ Mise à jour réussie !\n");
         } 
             saveAccountToFileFromRecord(tmp_file, r); 
+            remove(RECORDS);
+            rename(tmp_file, RECORDS)
     }
     // printf("-------++++++++ %ld %ld\n", start_possition, end_possinttion);
 

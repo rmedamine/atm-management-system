@@ -15,5 +15,7 @@ utils.o : src/header.h
 
 clean :
 	rm -f $(objects)
-
+fclean :
+	rm -f $(objects)
+	rm atm
 re: clean atm
