@@ -1,8 +1,9 @@
 #include "header.h"
 
-const char *RECORDS = "./data/records.txt";
 const char *TMP = "./data/tmp.txt";
+const char *RECORDS = "./data/records.txt";
 
+const char *USERS = "./data/users.txt";
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
     return fscanf(ptr, "%d %d %s %d %d/%d/%d %s %d %lf %s",
@@ -280,3 +281,30 @@ void checkUpdates(struct User u)
 //            r.amount,
 //            r.accountType);
 // }
+
+//------------------ registration---------------
+
+void registerMenu(char a[50], char pass[50])
+{
+    int id=0;
+    int currentId;
+    FILE *pf = fopen(USERS, "r+");
+     if (pf == NULL) {
+        perror("Failed to open file");
+        return;
+    }
+     while (fscanf(pf, "%d", &currentId) == 1) {
+          fscanf(pf, "%*[^\n]"); // Ignorer le reste de la ligne
+        if (currentId > id) {
+            id = currentId; 
+        }
+    }
+    id++;
+      fseek(pf, 0, SEEK_END);
+    fprintf(pf, "\n%d %s %s",
+            id++,
+            a,
+            pass);
+
+    fclose(pf);
+}

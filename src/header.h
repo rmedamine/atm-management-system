@@ -8,6 +8,9 @@ struct Date
     int month, day, year;
 };
 
+
+
+
 // all fields for each record of an account
 struct Record
 {

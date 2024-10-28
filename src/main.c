@@ -22,7 +22,7 @@ void mainMenu(struct User u)
         createNewAcc(u);
         break;
     case 2:
-    checkUpdates(u);
+        checkUpdates(u);
         // student TODO : add your **Update account information** function
         // here
         break;
@@ -31,7 +31,7 @@ void mainMenu(struct User u)
         // here
         break;
     case 4:
-         checkAllAccounts(u);
+        checkAllAccounts(u);
         break;
     case 5:
         // student TODO : add your **Make transaction** function
@@ -55,7 +55,7 @@ void mainMenu(struct User u)
 
 void initMenu(struct User *u)
 {
-    int r = 0; // 
+    int r = 0;  //
     int option; //
     system("clear");
     printf("\n\n\t\t======= ATM =======\n");
@@ -82,8 +82,13 @@ void initMenu(struct User *u)
             r = 1;
             break;
         case 2:
+            loginMenu(u->name, u->password);
+            registerMenu(u->name, u->password);
+            mainMenu(*u);
+
             // student TODO : add your **Registration** function
             // here
+
             r = 1;
             break;
         case 3:
@@ -98,7 +103,7 @@ void initMenu(struct User *u)
 int main()
 {
     struct User u;
-    
+
     initMenu(&u);
     // mainMenu(u);
     return 0;
