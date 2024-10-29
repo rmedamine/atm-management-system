@@ -265,8 +265,6 @@ void checkUpdates(struct User u)
     fclose(tmp_file);
 }
 
-
-
 //------------------ registration---------------
 
 void registerMenu(char a[50], char pass[50])
@@ -304,10 +302,10 @@ void checkAccounts(struct User u)
 
     char usersforcheck[50];
     FILE *files = fopen(RECORDS, "r+");
-     double savings = 7.0 / 100.0 / 12.0; 
-    double fixed01 = 4.0 / 100.0;        
-    double fixed02 = 5.0 / 50.0;         
-    double fixed03 = 3.0 * (8.0 / 100.0); 
+    double savings = 7.0 / 100.0 / 12.0;
+    double fixed01 = 4.0 / 100.0;
+    double fixed02 = 5.0 / 50.0;
+    double fixed03 = 3.0 * (8.0 / 100.0);
 
     int accountNbr;
     int found = 0;
@@ -326,15 +324,13 @@ void checkAccounts(struct User u)
     }
     while (getAccountFromFile(files, usersforcheck, &r))
     {
-        if (  strcmp(usersforcheck, u.name) == 0&& r.accountNbr == accountNbr )
-            found = 1;
-                    printf("name %s \n",u.name);
-                    printf("name %s \n",usersforcheck);
-
-                    printf("accountnbr %d \n",accountNbr);
-                                        
-
+        if (strcmp(usersforcheck, u.name) == 0 && r.accountNbr == accountNbr)
         {
+            found = 1;
+            printf("name %s \n", u.name);
+            printf("name %s \n", usersforcheck);
+
+            printf("accountnbr %d \n", accountNbr);
 
             printf("_____________________\n");
             printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
@@ -346,30 +342,40 @@ void checkAccounts(struct User u)
                    r.phone,
                    r.amount,
                    r.accountType);
-        }
-        if (strcmp(r.accountType, "current")==0)
-        {
-            printf("-> you will not get interests because the account is of type current");
-        }
-        if (strcmp(r.accountType , "saving")==0)
-        {
-            printf("type: %2f\n", r.amount);
 
-            printf("-> you will get $ %.2f as interests on day 10 of every month\n", savings * r.amount);
+            if (strcmp(r.accountType, "current") == 0)
+            {
+                printf("\n\n-> you will not get interests because the account is of type current");
+            }
+            if (strcmp(r.accountType, "saving") == 0)
+            {
+
+                printf("\n\n-> you will get $ %.2f as interests on day 10 of every month\n", savings * r.amount);
+            }
+            if (strcmp(r.accountType, "fixed01") == 0)
+            {
+
+                printf("\n\n-> you will get $ %.2f as interests on day 10 of every month\n", fixed01 * r.amount);
+            }
+            if (strcmp(r.accountType, "fixed02") == 0)
+            {
+
+                printf("\n\n-> you will get $ %.2f as interests on day 10 of every month\n", fixed02 * r.amount);
+            }
+            if (strcmp(r.accountType, "fixed03") == 0)
+            {
+
+                printf("\n\n-> you will get $ %.2f as interests on day 10 of every month\n", fixed03 * r.amount);
+            }
         }
-        fclose(files);
     }
     if (!found)
     {
         printf("sorry  Compte non trouvé !\n");
     }
-    else
-    {
-        success(u);
-
-    }
+   
+    fclose(files);
 }
-
 
 // void print_record(struct Record r)
 // {
