@@ -202,7 +202,7 @@ void checkUpdates(struct User u)
         fclose(record_file);
         return;
     }
-    printf("-------  %d\n", accountNbr);
+    // printf("-------  %d\n", accountNbr);
     bool found = false;
     // Lire le fichier pour trouver le compte
     while (getAccountFromFile(record_file, r.name, &r))
@@ -254,7 +254,7 @@ void checkUpdates(struct User u)
 
     if (!found)
     {
-        printf("✖ Compte non trouvé !\n");
+        printf("sorry  Compte non trouvé !\n");
     }
     else
     {
@@ -263,8 +263,113 @@ void checkUpdates(struct User u)
     }
     fclose(record_file);
     fclose(tmp_file);
-    // Logique de mise à jour...
 }
+
+
+
+//------------------ registration---------------
+
+void registerMenu(char a[50], char pass[50])
+{
+
+    int id = 0;
+    int currentId;
+    FILE *pf = fopen(USERS, "r+");
+    if (pf == NULL)
+    {
+        perror("Failed to open file");
+        return;
+    }
+    while (fscanf(pf, "%d", &currentId) == 1)
+    {
+        fscanf(pf, "%*[^\n]"); // Ignorer le reste de la ligne
+        if (currentId > id)
+        {
+            id = currentId;
+        }
+    }
+    id++;
+    fseek(pf, 0, SEEK_END);
+    fprintf(pf, "\n%d %s %s",
+            id++,
+            a,
+            pass);
+
+    fclose(pf);
+}
+
+void checkAccounts(struct User u)
+{
+    struct Record r;
+
+    char usersforcheck[50];
+    FILE *files = fopen(RECORDS, "r+");
+     double savings = 7.0 / 100.0 / 12.0; 
+    double fixed01 = 4.0 / 100.0;        
+    double fixed02 = 5.0 / 50.0;         
+    double fixed03 = 3.0 * (8.0 / 100.0); 
+
+    int accountNbr;
+    int found = 0;
+
+    if (files == NULL)
+    {
+        printf("Erreur d'ouverture du fichier !\n");
+        return;
+    }
+    printf("Enter the account number: ");
+    if (scanf("%d", &accountNbr) != 1)
+    {
+        printf("Entrée invalide pour le numéro de compte !\n");
+        fclose(files);
+        return;
+    }
+    while (getAccountFromFile(files, usersforcheck, &r))
+    {
+        if (  strcmp(usersforcheck, u.name) == 0&& r.accountNbr == accountNbr )
+            found = 1;
+                    printf("name %s \n",u.name);
+                    printf("name %s \n",usersforcheck);
+
+                    printf("accountnbr %d \n",accountNbr);
+                                        
+
+        {
+
+            printf("_____________________\n");
+            printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
+                   r.accountNbr,
+                   r.deposit.day,
+                   r.deposit.month,
+                   r.deposit.year,
+                   r.country,
+                   r.phone,
+                   r.amount,
+                   r.accountType);
+        }
+        if (strcmp(r.accountType, "current")==0)
+        {
+            printf("-> you will not get interests because the account is of type current");
+        }
+        if (strcmp(r.accountType , "saving")==0)
+        {
+            printf("type: %2f\n", r.amount);
+
+            printf("-> you will get $ %.2f as interests on day 10 of every month\n", savings * r.amount);
+        }
+        fclose(files);
+    }
+    if (!found)
+    {
+        printf("sorry  Compte non trouvé !\n");
+    }
+    else
+    {
+        success(u);
+
+    }
+}
+
 
 // void print_record(struct Record r)
 // {
@@ -281,30 +386,3 @@ void checkUpdates(struct User u)
 //            r.amount,
 //            r.accountType);
 // }
-
-//------------------ registration---------------
-
-void registerMenu(char a[50], char pass[50])
-{
-    int id=0;
-    int currentId;
-    FILE *pf = fopen(USERS, "r+");
-     if (pf == NULL) {
-        perror("Failed to open file");
-        return;
-    }
-     while (fscanf(pf, "%d", &currentId) == 1) {
-          fscanf(pf, "%*[^\n]"); // Ignorer le reste de la ligne
-        if (currentId > id) {
-            id = currentId; 
-        }
-    }
-    id++;
-      fseek(pf, 0, SEEK_END);
-    fprintf(pf, "\n%d %s %s",
-            id++,
-            a,
-            pass);
-
-    fclose(pf);
-}
