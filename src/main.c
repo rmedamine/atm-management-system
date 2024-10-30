@@ -35,6 +35,8 @@ void mainMenu(struct User u)
         checkAllAccounts(u);
         break;
     case 5:
+    addOrremove(u);
+    mainMenu(u);
         // student TODO : add your **Make transaction** function
         // here
         break;

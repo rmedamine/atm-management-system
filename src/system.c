@@ -373,22 +373,81 @@ void checkAccounts(struct User u)
     {
         printf("sorry  Compte non trouvé !\n");
     }
-   
+
     fclose(files);
 }
 
-// void print_record(struct Record r)
-// {
-//     printf("%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
-//            r.id,
-//            r.id,
-//            r.name,
-//            r.accountNbr,
-//            r.deposit.month,
-//            r.deposit.day,
-//            r.deposit.year,
-//            r.country,
-//            r.phone,
-//            r.amount,
-//            r.accountType);
-// }
+void addOrremove(struct User u)
+{
+    struct Record r;
+    FILE *record_file = fopen(RECORDS, "r+");
+    bool found = false;
+    double withdraw;
+    int accountNbr;
+    int choice;
+
+    if (record_file == NULL)
+    {
+        printf("Erreur d'ouverture du fichier !\n");
+        return;
+    }
+
+    printf("Entre the  account number of the customer : \n");
+    
+    if (scanf("%d", &accountNbr) != 1)
+    {
+        printf("Entrée invalide pour le numéro de compte !\n");
+        fclose(record_file);
+        return;
+    }
+
+    while (getAccountFromFile(record_file, r.name, &r))
+    {
+        if (strcmp(r.name, u.name) == 0 && r.accountNbr == accountNbr)
+        {
+            found = true;
+
+            printf("Do you want to  :\n");
+            printf("1 -> WithDraw \n");
+            printf("2 -> Deposit \n");
+            printf("\n\n Enter your choice \n");
+
+            if (scanf("%d", &choice) != 1)
+            {
+                printf("Entrée invalide pour le choix !\n");
+                fclose(record_file);
+                return;
+            }
+
+            if (choice == 1)
+            {
+
+                printf("Enter the amount you what to withdraw : ");
+                scanf("%lf", &withdraw);
+                r.amount = r.amount - withdraw;
+            }
+             else if (choice == 2)
+            {
+                printf("Enter the amount you what to Desposit : ");
+                scanf("%lf", &withdraw);
+                r.amount = r.amount + withdraw;
+            }
+            else
+            {
+                printf("Choix invalide !\n");
+                fclose(record_file);
+                return;
+            }
+        }
+       
+    }
+     if (!found)
+        {
+        printf("sorry  Compte non trouvé !\n");
+        }
+        saveAccountToFile(record_file, u, r);
+
+    
+
+    fclose(record_file);
+}
