@@ -2,7 +2,7 @@
 
 const char *TMP = "./data/tmp.txt";
 const char *RECORDS = "./data/records.txt";
-
+const char *TMPR = "./data/temporary.txt";
 const char *USERS = "./data/users.txt";
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
@@ -200,14 +200,12 @@ void checkUpdates(struct User u)
     {
         printf("Entrée invalide pour le numéro de compte !\n");
         fclose(record_file);
+        fclose(tmp_file);
         return;
     }
-    // printf("-------  %d\n", accountNbr);
     bool found = false;
-    // Lire le fichier pour trouver le compte
     while (getAccountFromFile(record_file, r.name, &r))
     {
-        // printf("-------  %s %d %d\n", u.name, strcmp(userName, u.name), r.accountNbr);
         if (strcmp(r.name, u.name) == 0 && r.accountNbr == accountNbr)
         {
             found = true;
@@ -243,14 +241,11 @@ void checkUpdates(struct User u)
                 return;
             }
 
-            // Mettre à jour le fichier...
 
-            // print_record(r);
             printf("✔ Mise à jour réussie !\n");
         }
         saveAccountToFileFromRecord(tmp_file, r);
     }
-    // printf("-------++++++++ %ld %ld\n", start_possition, end_possinttion);
 
     if (!found)
     {
@@ -265,7 +260,6 @@ void checkUpdates(struct User u)
     fclose(tmp_file);
 }
 
-//------------------ registration---------------
 
 void registerMenu(char a[50], char pass[50])
 {
@@ -327,10 +321,7 @@ void checkAccounts(struct User u)
         if (strcmp(usersforcheck, u.name) == 0 && r.accountNbr == accountNbr)
         {
             found = 1;
-            printf("name %s \n", u.name);
-            printf("name %s \n", usersforcheck);
-
-            printf("accountnbr %d \n", accountNbr);
+          
 
             printf("_____________________\n");
             printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
@@ -381,12 +372,14 @@ void addOrremove(struct User u)
 {
     struct Record r;
     FILE *record_file = fopen(RECORDS, "r+");
+    FILE *temporary = fopen(TMPR, "w");
+
     bool found = false;
-    double withdraw;
+    double amount;
     int accountNbr;
     int choice;
 
-    if (record_file == NULL)
+    if (record_file == NULL || temporary == NULL)
     {
         printf("Erreur d'ouverture du fichier !\n");
         return;
@@ -398,6 +391,8 @@ void addOrremove(struct User u)
     {
         printf("Entrée invalide pour le numéro de compte !\n");
         fclose(record_file);
+        fclose(temporary);
+
         return;
     }
 
@@ -416,6 +411,8 @@ void addOrremove(struct User u)
             {
                 printf("Entrée invalide pour le choix !\n");
                 fclose(record_file);
+                fclose(temporary);
+                remove(TMPR);
                 return;
             }
 
@@ -423,31 +420,98 @@ void addOrremove(struct User u)
             {
 
                 printf("Enter the amount you what to withdraw : ");
-                scanf("%lf", &withdraw);
-                r.amount = r.amount - withdraw;
+                scanf("%lf", &amount);
+                r.amount -= amount;
             }
              else if (choice == 2)
             {
                 printf("Enter the amount you what to Desposit : ");
-                scanf("%lf", &withdraw);
-                r.amount = r.amount + withdraw;
+                scanf("%lf", &amount);
+                r.amount += amount;
             }
             else
             {
                 printf("Choix invalide !\n");
                 fclose(record_file);
+                fclose(temporary);
+                remove(TMPR);
+
                 return;
             }
         }
-       
+               saveAccountToFileFromRecord(temporary, r);
+
     }
      if (!found)
         {
         printf("sorry  Compte non trouvé !\n");
         }
-        saveAccountToFile(record_file, u, r);
 
     
 
     fclose(record_file);
+    fclose(temporary);
+
+    remove(RECORDS);
+    rename(TMPR, RECORDS);
+}
+
+void removeAccount(struct User u){
+    struct Record r;
+
+    FILE *files = fopen(RECORDS, "r+");
+    char usersforcheck[50];
+     int accountNbr;
+    int found = 0;
+     if (files == NULL)
+    {
+        printf("Erreur d'ouverture du fichier !\n");
+        return;
+    }
+    printf("Enter the account number: ");
+    if (scanf("%d", &accountNbr) != 1)
+    {
+        printf("Entrée invalide pour le numéro de compte !\n");
+        fclose(files);
+        return;
+    }
+     while (getAccountFromFile(files, usersforcheck, &r))
+    {
+        if (strcmp(usersforcheck, u.name) == 0 && r.accountNbr == accountNbr)
+        {
+            found = 1;
+          
+                system("clear");
+
+            printf("_____________________\n");
+            printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
+                   r.accountNbr,
+                   r.deposit.day,
+                   r.deposit.month,
+                   r.deposit.year,
+                   r.country,
+                   r.phone,
+                   r.amount,
+                   r.accountType);
+            int choice;
+             printf("\n\n Are you serious \n");
+                        if (scanf("%d", &choice)!=1)
+                        {
+                            printf("Entrée invalide pour le choix !\n");
+                fclose(files);
+               
+                        }
+                        if (choice== 1)
+                        {
+                            
+                        }
+
+
+            
+        }
+    }   
+     if (!found)
+    {
+        printf("sorry  Compte non trouvé !\n");
+    } 
 }
