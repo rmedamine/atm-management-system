@@ -47,6 +47,7 @@ void checkAllAccounts(struct User u);
 void checkAccounts(struct User u);
 void addOrremove(struct User u);
 void removeAccount(struct User u);
+void trasferData(struct User u);
 
 
 

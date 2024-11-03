@@ -1,5 +1,6 @@
 #include "header.h"
 
+
 void mainMenu(struct User u)
 {
     int option;
@@ -36,6 +37,7 @@ void mainMenu(struct User u)
         break;
     case 5:
     addOrremove(u);
+        // here
     mainMenu(u);
         // student TODO : add your **Make transaction** function
         // here
@@ -43,9 +45,9 @@ void mainMenu(struct User u)
     case 6:
     removeAccount(u);
         // student TODO : add your **Remove existing account** function
-        // here
         break;
     case 7:
+    trasferData(u);
         // student TODO : add your **Transfer owner** function
         // here
         break;
@@ -87,6 +89,7 @@ void initMenu(struct User *u)
             r = 1;
             break;
         case 2:
+
             loginMenu(u->name, u->password);
             registerMenu(u->name, u->password);
             mainMenu(*u);
@@ -101,6 +104,7 @@ void initMenu(struct User *u)
             break;
         default:
             printf("Insert a valid operation!\n");
+            exit(1);
         }
     }
 };

@@ -241,7 +241,6 @@ void checkUpdates(struct User u)
                 return;
             }
 
-
             printf("✔ Mise à jour réussie !\n");
         }
         saveAccountToFileFromRecord(tmp_file, r);
@@ -258,15 +257,16 @@ void checkUpdates(struct User u)
     }
     fclose(record_file);
     fclose(tmp_file);
+    success(u);
 }
-
 
 void registerMenu(char a[50], char pass[50])
 {
 
+    FILE *pf = fopen(USERS, "a+");
     int id = 0;
     int currentId;
-    FILE *pf = fopen(USERS, "r+");
+
     if (pf == NULL)
     {
         perror("Failed to open file");
@@ -321,7 +321,6 @@ void checkAccounts(struct User u)
         if (strcmp(usersforcheck, u.name) == 0 && r.accountNbr == accountNbr)
         {
             found = 1;
-          
 
             printf("_____________________\n");
             printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
@@ -366,6 +365,7 @@ void checkAccounts(struct User u)
     }
 
     fclose(files);
+    success(u);
 }
 
 void addOrremove(struct User u)
@@ -386,7 +386,7 @@ void addOrremove(struct User u)
     }
 
     printf("Entre the  account number of the customer : \n");
-    
+
     if (scanf("%d", &accountNbr) != 1)
     {
         printf("Entrée invalide pour le numéro de compte !\n");
@@ -421,9 +421,18 @@ void addOrremove(struct User u)
 
                 printf("Enter the amount you what to withdraw : ");
                 scanf("%lf", &amount);
-                r.amount -= amount;
+                if (r.amount > amount)
+                {
+
+                    r.amount -= amount;
+                }
+                else
+                {
+                    printf("daber 3al 3a9a");
+                    system("clear");
+                }
             }
-             else if (choice == 2)
+            else if (choice == 2)
             {
                 printf("Enter the amount you what to Desposit : ");
                 scanf("%lf", &amount);
@@ -439,52 +448,59 @@ void addOrremove(struct User u)
                 return;
             }
         }
-               saveAccountToFileFromRecord(temporary, r);
-
+        saveAccountToFileFromRecord(temporary, r);
     }
-     if (!found)
-        {
+    if (!found)
+    {
         printf("sorry  Compte non trouvé !\n");
-        }
-
-    
+    }
 
     fclose(record_file);
     fclose(temporary);
 
     remove(RECORDS);
     rename(TMPR, RECORDS);
+    mainMenu(u);
 }
 
-void removeAccount(struct User u){
+void removeAccount(struct User u)
+{
     struct Record r;
-
+    FILE *tmp_file = fopen(TMPR, "w");
     FILE *files = fopen(RECORDS, "r+");
-    char usersforcheck[50];
-     int accountNbr;
+    // char usersforcheck[50];
+    int accountNbr;
     int found = 0;
-     if (files == NULL)
+    int choice;
+
+    if (files == NULL || tmp_file == NULL)
     {
         printf("Erreur d'ouverture du fichier !\n");
+        if (files)
+            fclose(files);
+        if (tmp_file)
+            fclose(tmp_file);
         return;
     }
+
     printf("Enter the account number: ");
     if (scanf("%d", &accountNbr) != 1)
     {
         printf("Entrée invalide pour le numéro de compte !\n");
         fclose(files);
+        fclose(tmp_file);
         return;
     }
-     while (getAccountFromFile(files, usersforcheck, &r))
+
+    while (getAccountFromFile(files, r.name, &r))
     {
-        if (strcmp(usersforcheck, u.name) == 0 && r.accountNbr == accountNbr)
+        if (strcmp(r.name, u.name) == 0 && r.accountNbr == accountNbr)
         {
             found = 1;
-          
-                system("clear");
 
+            system("clear");
             printf("_____________________\n");
-            printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
+            printf("\nAccount number: %d\nDeposit Date: %d/%d/%d\nCountry: %s\nPhone number: %d\nAmount deposited: $%.2f\nType Of Account: %s\n",
                    r.accountNbr,
                    r.deposit.day,
                    r.deposit.month,
@@ -493,25 +509,133 @@ void removeAccount(struct User u){
                    r.phone,
                    r.amount,
                    r.accountType);
-            int choice;
-             printf("\n\n Are you serious \n");
-                        if (scanf("%d", &choice)!=1)
-                        {
-                            printf("Entrée invalide pour le choix !\n");
+            printf("\n\nAre you serious? Enter 1 to confirm, any other number to cancel: ");
+
+            if (scanf("%d", &choice) != 1)
+            {
+                printf("Entrée invalide pour le choix !\n");
                 fclose(files);
-               
-                        }
-                        if (choice== 1)
-                        {
-                            
-                        }
+                fclose(tmp_file);
+                return;
+            }
 
-
-            
+            if (choice == 1)
+            {
+                printf("Account removed.\n");
+                continue;
+            }
+            else
+            {
+                printf("Account removal cancelled.\n");
+            }
         }
-    }   
-     if (!found)
+        saveAccountToFileFromRecord(tmp_file, r);
+    }
+
+    if (!found)
     {
-        printf("sorry  Compte non trouvé !\n");
-    } 
+        printf("Désolé, compte non trouvé !\n");
+    }
+
+    fclose(files);
+    fclose(tmp_file);
+
+    if (found && choice == 1)
+    {
+        remove(RECORDS);
+        rename(TMPR, RECORDS);
+    }
+    else
+    {
+        remove(TMPR);
+    }
+    success(u);
+}
+void trasferData(struct User u)
+{
+    int usertotranser;
+    struct Record r;
+    FILE *useres = fopen(USERS, "r"); // Ouvrir en lecture pour vérifier l'existence de l'utilisateur
+    FILE *recordes = fopen(RECORDS, "r");
+    FILE *tmpfile = fopen(TMP, "w");
+    char newusr[50];  // Pour stocker le nom du nouvel utilisateur
+    int found = 0;
+
+    if (useres == NULL || recordes == NULL || tmpfile == NULL)
+    {
+        printf("Erreur d'ouverture du fichier !\n");
+        return;
+    }
+
+    printf("Le numéro de compte dont vous voulez transférer la propriété : \n");
+    if (scanf("%d", &usertotranser) != 1)
+    {
+        printf("Entrée invalide pour le numéro de compte !\n");
+        fclose(useres);
+        fclose(recordes);
+        fclose(tmpfile);
+        return;
+    }
+
+    while (getAccountFromFile(recordes, r.name, &r))
+    {
+        if (strcmp(r.name, u.name) == 0 && r.accountNbr == usertotranser)
+        {
+            found = 1;
+
+            printf("\t\t====== Transfert du compte : \n\n");
+            printf("\nAccount number: %d\nDeposit Date: %d/%d/%d\nCountry: %s\nPhone number: %d\nAmount deposited: $%.2f\nType Of Account: %s\n",
+                   r.accountNbr,
+                   r.deposit.day,
+                   r.deposit.month,
+                   r.deposit.year,
+                   r.country,
+                   r.phone,
+                   r.amount,
+                   r.accountType);
+
+            printf("À quel utilisateur voulez-vous transférer la propriété ? Entrez le nom d'utilisateur : ");
+            scanf("%s", newusr);
+
+            // Vérifier si l'utilisateur existe
+            struct User newUser;
+            int userExists = 0;
+
+            // Réinitialiser le pointeur vers le début du fichier USERS
+            rewind(useres);
+            while (fscanf(useres, "%d %s %s", &newUser.id, newUser.name, newUser.password) != EOF)
+            {
+                if (strcmp(newusr, newUser.name) == 0)
+                {
+                    userExists = 1;
+                    break;
+                }
+            }
+
+            if (userExists)
+            {
+                // Mettre à jour le nom de l'utilisateur dans le record
+                strcpy(r.name, newusr);
+                printf("dahaba walam ya3od\n\n");
+            }
+            else
+            {
+                printf("L'utilisateur %s n'existe pas.\n", newusr);
+                break; 
+            }
+        }
+        saveAccountToFileFromRecord(tmpfile, r);
+    }
+
+    if (!found)
+    {
+        printf("Désolé, compte non trouvé !\n");
+    }
+    
+    fclose(recordes);
+    fclose(useres);
+    fclose(tmpfile);
+
+    remove(RECORDS);
+    rename(TMP, RECORDS);
 }

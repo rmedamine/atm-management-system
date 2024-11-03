@@ -1,19 +1,4 @@
-0 0 yyy 1 12/12/2012 maroc 212 11222.00 saving
+6 6 alice 12 10/10/2002 maroc 3333333 999.90 saving
 
-1 1 yyy 2 11/11/2011 test 213 12121.00 current
+0 0 alice 13 10/10/2020 uk 12332323 9932.23 fixed02
 
-2 2 yyy 3 12/21/2000 tunisie 214 12121.00 fixed02
-
-3 3 yyy 4 12/1/1999 libie 215 121.00 fixed03
-
-6 6 yyy 5 12/12/2009 agadir 2020 121212.00 saving
-
-6 6 dddd 0 12/12/2000 usa 121212 1001.20 saving
-
-6 6 dddd 1 12/12/2000 usa 121212 1001.20 fixed01
-
-6 6 dddd 2 12/12/2000 usa 121212 900.00 fixed02
-
-6 6 dddd 3 12/12/2000 usa 121212 0.20 fixed03
-
-6 6 dddd 4 10/10/2010 oujda 783695541 1000.00 saving
