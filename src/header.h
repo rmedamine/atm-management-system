@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+
 struct Date
 {
     int month, day, year;
@@ -37,10 +38,10 @@ struct User
 void loginMenu(char a[50], char pass[50]);
 void registerMenu(char a[50], char pass[50]);
 const char *getPassword(struct User u);
+const int getId(struct User u);
 
 // system function
 void checkUpdates(struct User u);
-
 void createNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
@@ -48,8 +49,7 @@ void checkAccounts(struct User u);
 void addOrremove(struct User u);
 void removeAccount(struct User u);
 void trasferData(struct User u);
-
-
+// bool checkAlphabet();
 
 
 // CUTSOM FUNCTIONS

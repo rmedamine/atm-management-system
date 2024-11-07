@@ -56,3 +56,27 @@ const char *getPassword(struct User u)
     fclose(fp);
     return "no user found";
 }
+
+const int getId(struct User u)
+{
+    FILE *fp; //
+    struct User userChecker;
+
+    if ((fp = fopen("./data/users.txt", "r")) == NULL)
+    {
+        printf("Error! opening file");
+        exit(1);
+    }
+    int id;
+    while (fscanf(fp, "%d %s %s", &id, userChecker.name, userChecker.password) != EOF)
+    {
+        if (strcmp(userChecker.name, u.name) == 0)
+        {
+            fclose(fp);
+            return id;
+        }
+    }
+
+    fclose(fp);
+    return -1;
+}

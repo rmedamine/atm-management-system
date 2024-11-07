@@ -1,4 +1,5 @@
 #include "header.h"
+#include <ctype.h>
 
 const char *TMP = "./data/tmp.txt";
 const char *RECORDS = "./data/records.txt";
@@ -22,6 +23,28 @@ int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 
 void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
 {
+    // todo get last id 
+    FILE *pf = fopen(RECORDS, "r");
+    int id = 0;
+    int currentId;
+
+    if (pf == NULL)
+    {
+        perror("Failed to open file");
+        return;
+    }
+    
+    while (fscanf(pf, "%d", &currentId) == 1)
+    {
+        fscanf(pf, "%*[^\n]"); // Ignorer le reste de la ligne
+        if (currentId > id)
+        {
+            id = currentId;
+        }
+    }
+    id++;
+    r.id = id;
+    fclose(pf);
     fprintf(ptr, "%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
             r.id,
             u.id,
@@ -114,12 +137,57 @@ invalid:
     }
 }
 
+bool checkAlphabet(const char *str)
+{
+    int i;
+    for (i = 0; i < strlen(str); i++)
+    {
+        if (!isalpha(str[i]))
+
+            return false;
+        else
+            return true;
+    }
+}
+
+int checkDigit(char *str)
+{
+    int i;
+    for (i = 0; i < strlen(str); i++)
+    {
+        if (!isdigit(str[i]))
+        {
+
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int is_valid_number(char *str)
+{
+    char *endptr;
+    strtod(str, &endptr);
+    if (*endptr != '\0')
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
 void createNewAcc(struct User u)
 {
+    printf("%d %s %s\n", u.id, u.name, u.password);
     struct Record r;
     struct Record cr;
     char userName[50];
     FILE *pf = fopen(RECORDS, "a+");
+    char tmprory[50];
+    char tmprory2[50];
+    char tmprory3[100];
 
 noAccount:
     system("clear");
@@ -127,8 +195,20 @@ noAccount:
 
     printf("\nEnter today's date(mm/dd/yyyy):");
     scanf("%d/%d/%d", &r.deposit.month, &r.deposit.day, &r.deposit.year);
+    if (r.deposit.day < 1 || r.deposit.day > 31 || r.deposit.month < 1 || r.deposit.month > 12 || r.deposit.year < 2000 || r.deposit.year > 2024)
+    {
+        printf("\ncheck date\n\n");
+        return;
+    }
+
     printf("\nEnter the account number:");
-    scanf("%d", &r.accountNbr);
+    scanf("%s", tmprory);
+    if (!checkDigit(tmprory))
+    {
+        printf("erreur account \n\n");
+        return;
+    }
+    r.accountNbr = atoi(tmprory);
 
     while (getAccountFromFile(pf, userName, &cr))
     {
@@ -140,12 +220,52 @@ noAccount:
     }
     printf("\nEnter the country:");
     scanf("%s", r.country);
+    if (!checkAlphabet(r.country))
+    {
+        printf("\nmust erreur \n\n");
+        return;
+    }
+
     printf("\nEnter the phone number:");
-    scanf("%d", &r.phone);
+    scanf("%s", tmprory);
+
+    if (!checkDigit(tmprory))
+    {
+        printf("mal fait \n\n");
+        return;
+    }
+    r.phone = atoi(tmprory);
     printf("\nEnter amount to deposit: $");
-    scanf("%lf", &r.amount);
+    scanf("%s", tmprory);
+    if (!is_valid_number(tmprory))
+    {
+        printf("\n mal erruer : \n\n");
+        return;
+    }
+    r.amount = atof(tmprory);
+
     printf("\nChoose the type of account:\n\t-> saving\n\t-> current\n\t-> fixed01(for 1 year)\n\t-> fixed02(for 2 years)\n\t-> fixed03(for 3 years)\n\n\tEnter your choice:");
     scanf("%s", r.accountType);
+    if (!checkAlphabet(r.accountType))
+    {
+        printf("erreur type ! : \n\n");
+        return;
+    }
+    char *options[5] = {"saving", "current", "fixed01", "fixed02", "fixed03"};
+    for (int i = 0; i < 5; i++)
+    {
+        if (strcmp(options[i], r.accountType) == 0)
+        {
+
+            break;
+        }
+        if (i == 4)
+        {
+            printf("\nerreur de choix \n\n");
+            return;
+        }
+    }
+
 
     saveAccountToFile(pf, u, r);
 
@@ -272,6 +392,7 @@ void registerMenu(char a[50], char pass[50])
         perror("Failed to open file");
         return;
     }
+    
     while (fscanf(pf, "%d", &currentId) == 1)
     {
         fscanf(pf, "%*[^\n]"); // Ignorer le reste de la ligne
@@ -558,7 +679,7 @@ void trasferData(struct User u)
     FILE *useres = fopen(USERS, "r"); // Ouvrir en lecture pour vérifier l'existence de l'utilisateur
     FILE *recordes = fopen(RECORDS, "r");
     FILE *tmpfile = fopen(TMP, "w");
-    char newusr[50];  // Pour stocker le nom du nouvel utilisateur
+    char newusr[50]; // Pour stocker le nom du nouvel utilisateur
     int found = 0;
 
     if (useres == NULL || recordes == NULL || tmpfile == NULL)
@@ -621,7 +742,7 @@ void trasferData(struct User u)
             else
             {
                 printf("L'utilisateur %s n'existe pas.\n", newusr);
-                break; 
+                break;
             }
         }
         saveAccountToFileFromRecord(tmpfile, r);
@@ -631,7 +752,7 @@ void trasferData(struct User u)
     {
         printf("Désolé, compte non trouvé !\n");
     }
-    
+
     fclose(recordes);
     fclose(useres);
     fclose(tmpfile);

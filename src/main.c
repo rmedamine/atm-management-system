@@ -79,6 +79,7 @@ void initMenu(struct User *u)
             loginMenu(u->name, u->password);
             if (strcmp(u->password, getPassword(*u)) == 0)
             {
+                u->id = getId(*u);
                 mainMenu(*u);
             }
             else
