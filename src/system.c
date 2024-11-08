@@ -25,8 +25,9 @@ void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
 {
     // todo get last id 
     FILE *pf = fopen(RECORDS, "r");
-    int id = 0;
+    int id = -1;
     int currentId;
+
 
     if (pf == NULL)
     {
@@ -61,9 +62,10 @@ void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
 
 void saveAccountToFileFromRecord(FILE *ptr, struct Record r)
 {
-    fprintf(ptr, "%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
+     struct User u;
+         fprintf(ptr, "%d %d %s %d %d/%d/%d %s %d %.2lf %s\n\n",
             r.id,
-            r.id,
+            r.userId,
             r.name,
             r.accountNbr,
             r.deposit.month,
@@ -186,8 +188,7 @@ void createNewAcc(struct User u)
     char userName[50];
     FILE *pf = fopen(RECORDS, "a+");
     char tmprory[50];
-    char tmprory2[50];
-    char tmprory3[100];
+   
 
 noAccount:
     system("clear");
@@ -232,6 +233,10 @@ noAccount:
     if (!checkDigit(tmprory))
     {
         printf("mal fait \n\n");
+        return;
+    }
+    if (strlen(tmprory)>10){
+        printf("erruer de phone \n\n");
         return;
     }
     r.phone = atoi(tmprory);
@@ -380,11 +385,12 @@ void checkUpdates(struct User u)
     success(u);
 }
 
-void registerMenu(char a[50], char pass[50])
+void registerMenu(  char a[50], char pass[50])
 {
 
     FILE *pf = fopen(USERS, "a+");
-    int id = 0;
+    struct User u;
+    int id = -1;
     int currentId;
 
     if (pf == NULL)
@@ -392,8 +398,11 @@ void registerMenu(char a[50], char pass[50])
         perror("Failed to open file");
         return;
     }
+
     
-    while (fscanf(pf, "%d", &currentId) == 1)
+    
+    
+    while (fscanf(pf, "%d", &currentId) == 1  )
     {
         fscanf(pf, "%*[^\n]"); // Ignorer le reste de la ligne
         if (currentId > id)
@@ -402,7 +411,7 @@ void registerMenu(char a[50], char pass[50])
         }
     }
     id++;
-    fseek(pf, 0, SEEK_END);
+   // fseek(pf, 0, SEEK_END);
     fprintf(pf, "\n%d %s %s",
             id++,
             a,
@@ -476,7 +485,7 @@ void checkAccounts(struct User u)
             if (strcmp(r.accountType, "fixed03") == 0)
             {
 
-                printf("\n\n-> you will get $ %.2f as interests on day 10 of every month\n", fixed03 * r.amount);
+                printf("\n\n-> you will get $ %.2f as interests on %d/%d/%d\n", fixed03 * r.amount,r.deposit.day,r.deposit.month,r.deposit.year+3);
             }
         }
     }
@@ -521,7 +530,15 @@ void addOrremove(struct User u)
     {
         if (strcmp(r.name, u.name) == 0 && r.accountNbr == accountNbr)
         {
+            if(strcmp(r.accountType,"fixed03")==0||strcmp(r.accountType,"fixed03")==0|| strcmp(r.accountType,"fixed01")==0){
+                printf(" it is not possible to withdraw or deposit for fixed accounts?");
+                fclose(record_file);
+                fclose(temporary);
+                return;
+
+            }
             found = true;
+            
 
             printf("Do you want to  :\n");
             printf("1 -> WithDraw \n");

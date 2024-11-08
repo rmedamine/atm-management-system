@@ -1,7 +1,6 @@
 #include <termios.h>
 #include "header.h"
 
-
 void loginMenu(char username[50], char pass[50])
 {
     struct termios oflags, nflags;
@@ -56,13 +55,12 @@ const char *getPassword(struct User u)
     fclose(fp);
     return "no user found";
 }
-
-const int getId(struct User u)
+const char *getUser(struct User u)
 {
     FILE *fp; //
     struct User userChecker;
 
-    if ((fp = fopen("./data/users.txt", "r")) == NULL)
+    if ((fp = fopen("./data/users.txt", "a+")) == NULL)
     {
         printf("Error! opening file");
         exit(1);
@@ -73,8 +71,39 @@ const int getId(struct User u)
         if (strcmp(userChecker.name, u.name) == 0)
         {
             fclose(fp);
-            return id;
+            char *buff = userChecker.name;
+            return buff;
         }
+    }
+
+    fclose(fp);
+    return "no user found";
+}
+
+const int getId(struct User u)
+{
+    FILE *fp; //
+    struct User userChecker;
+    struct Record r;
+    int id;
+
+    if ((fp = fopen("./data/users.txt", "r")) == NULL)
+    {
+        printf("Error! opening file");
+        exit(1);
+    }
+    while (fscanf(fp, "%d %s %s", &id, userChecker.name, userChecker.password) != EOF)
+    {
+        if (strcmp(userChecker.name, u.name) == 0)
+        {
+            printf("this is == %s\n", userChecker.name);
+            printf("this is == %s\n", u.name);
+
+            fclose(fp);
+            return  id;
+        }
+        printf("this is != %s \n", userChecker.name);
+        printf("this is != %s\n", u.name);
     }
 
     fclose(fp);

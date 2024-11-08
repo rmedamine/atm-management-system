@@ -39,6 +39,7 @@ void loginMenu(char a[50], char pass[50]);
 void registerMenu(char a[50], char pass[50]);
 const char *getPassword(struct User u);
 const int getId(struct User u);
+const char *getUser(struct User u);
 
 // system function
 void checkUpdates(struct User u);

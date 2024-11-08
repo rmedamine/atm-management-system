@@ -24,6 +24,8 @@ void mainMenu(struct User u)
         break;
     case 2:
         checkUpdates(u);
+
+        
         // student TODO : add your **Update account information** function
         // here
         break;
@@ -38,7 +40,6 @@ void mainMenu(struct User u)
     case 5:
     addOrremove(u);
         // here
-    mainMenu(u);
         // student TODO : add your **Make transaction** function
         // here
         break;
@@ -92,8 +93,14 @@ void initMenu(struct User *u)
         case 2:
 
             loginMenu(u->name, u->password);
+            if(strcmp(u->name,getUser(*u))==0){
+                printf("erreur user exist  \n");
+                return;
+            }else {
+
             registerMenu(u->name, u->password);
             mainMenu(*u);
+            }
 
             // student TODO : add your **Registration** function
             // here
